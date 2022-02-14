@@ -5,7 +5,7 @@ using UnityEngine.SceneManagement;
 
 public class Sphere : MonoBehaviour
 {
-    public static bool isRotate = false;
+    public static bool isRotate;
 
     [Header("Transform Objects")]
     [SerializeField]
@@ -22,7 +22,12 @@ public class Sphere : MonoBehaviour
     Animator circle1, circle2, circle3;
     CircleCollider2D circle1_collider, circle2_collider, circle3_collider;
     Sphere circle1_script, circle2_script, circle3_script;
+    int nextScene;
 
+    private void Awake()
+    {
+        isRotate = true;
+    }
     // Update is called once per frame
     void Update()
     {
@@ -42,7 +47,7 @@ public class Sphere : MonoBehaviour
         posX = rotationCenter.position.x + Mathf.Cos(angle) * rotationRadius;
         posY = rotationCenter.position.y + Mathf.Sin(angle) * rotationRadius;
 
-        selectedSphere.transform.position = new Vector2(posX, posY);
+        transform.position = new Vector2(posX, posY);
 
         angle = angle + Time.deltaTime * angularSpeed;
 
@@ -57,16 +62,17 @@ public class Sphere : MonoBehaviour
 
     private void OnMouseDown()
     {
-        isRotate = true;
+        nextScene = SceneManager.GetActiveScene().buildIndex + 1;
+
         string sphereName = this.gameObject.name;
 
         fade_and_removeCompnents_of_unselectedSphere(sphereName);
-        
+
         selectedSphere = GameObject.Find($"{sphereName}");
         selectedSphere.name = "selectedSphere";
-        
-        DontDestroyOnLoad(selectedSphere);
 
+        DontDestroyOnLoad(selectedSphere);
+        LevelLoader.instance.LoadScene(nextScene);
     }
 
     //this method will check which sphere is selected by using it's name 
